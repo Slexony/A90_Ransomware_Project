@@ -22,14 +22,14 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential git ccache libffi-dev libssl-dev zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses-dev libreadline-dev libsqlite3-dev tk-dev
+        sudo apt-get install -y build-essential git ccache libffi-dev libssl-dev zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses-dev libreadline-dev libsqlite3-dev tk-dev clang lld cmake patchelf
         pip install --upgrade pip
         pip install "cython<3.0.0" buildozer
 
     - name: APK Derleme İşlemini Başlat
       run: |
         buildozer init
-        sed -i 's/requirements = python3,kivy/requirements = python3,kivy,ffpyplayer/g' buildozer.spec
+        sed -i 's/requirements = python3,kivy/requirements = python3,kivy,android/g' buildozer.spec
         sed -i 's/source.include_exts = py,png,jpg,kv,atlas/source.include_exts = py,png,jpg,mp3,wav/g' buildozer.spec
         sed -i 's/# android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
         buildozer -v android debug
