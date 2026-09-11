@@ -1,0 +1,37 @@
+name: Build A90 Ransomware APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repositoriyi Çek
+      uses: actions/checkout@v3
+
+    - name: Python Ortamını Kur
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Sistem Bağımlılıklarını Kur
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential git ccache libffi-dev libssl-dev libtinfo5 zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev
+        pip install --upgrade buildozer cython
+
+    - name: APK Derleme İşlemini Başlat
+      run: |
+        buildozer init
+        sed -i 's/requirements = python3,kivy/requirements = python3,kivy,ffpyplayer/g' buildozer.spec
+        sed -i 's/source.include_exts = py,png,jpg,kv,atlas/source.include_exts = py,png,jpg,mp3,wav/g' buildozer.spec
+        buildozer -v android debug
+
+    - name: APK Dosyasını Yükle
+      uses: actions/upload-artifact@v3
+      with:
+        name: A90-Ransom-APK
+        path: bin/*.apk
